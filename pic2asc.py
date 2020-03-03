@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 使用 Python 创建照片马赛克
-执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/a.jpg --grid-size 128 128 --cell-size 300
+执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/site2.jpg --grid-size 128 128 --cell-size 300 --output-file output/site2.asc
 
 输入一张目标照片和多张替换照片，将目标照片按网格划分为许多小方块，然后将每个小方块替换为颜色值最
 接近的那张替换照片，就形成了马赛克效果。
@@ -15,10 +15,12 @@ from PIL import Image
 
 
 cd = {
-    0 : (101, 169, 82), #green
-    1 : (94, 208, 198), #blue
-    2 : (255, 255, 227), #yello
-    3 : (205, 205, 200), #grey
+    0 : (255, 255, 255), #road
+    1 : (62, 130, 195), #university
+    2 : (246, 202, 66), #community
+    3 : (150, 150, 150), #transport
+    4 : (105, 197, 91), #green
+    5 : (0, 0, 0), #null
 }
 
 
@@ -199,11 +201,11 @@ def createPhotomosaic(target_image, grid_size, cellsize):
     keys = list(cd.keys())
 
 
-    # 对   每个网格小图像，   从替换图像列表找到颜色最相似的那个，添加到 output_images 里
+    # 对   每个网格小图像，   从替换颜色列表找到颜色最相似的那个
     for img in target_images:
         # 计算每个小图像的颜色平均值
         avg = getAverageRGB(img)
-        # 找到最匹配的那个小图像，添加到 output_images 里
+        # 找到最匹配的那个颜色值
         match_index = getBestMatchIndex(avg)
         color_sequence.append(keys[match_index])
         # 如果完成了一组，打印进度信息
