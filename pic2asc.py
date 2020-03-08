@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 使用 Python 创建照片马赛克
-执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/site2.jpg --grid-size 128 128 --cell-size 300 --output-file output/site2.asc
+执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/site3.jpg --grid-size 200 200 --cell-size 300 --output-file output/site_r.asc
 
 输入一张目标照片和多张替换照片，将目标照片按网格划分为许多小方块，然后将每个小方块替换为颜色值最
 接近的那张替换照片，就形成了马赛克效果。
@@ -18,8 +18,8 @@ cd = {
     0 : (255, 255, 255), #road
     1 : (62, 130, 195), #university
     2 : (246, 202, 66), #community
-    3 : (150, 150, 150), #transport
-    4 : (105, 197, 91), #green
+    3 : (105, 197, 91), #green
+    4 : (250, 0, 0), #main road
     5 : (0, 0, 0), #null
 }
 
@@ -222,7 +222,7 @@ def createPhotomosaic(target_image, grid_size, cellsize):
             lt[row].append(str(color_sequence[row*grid_size[0] + col]) + " ") #将la列表中的数据添加到lt列表的对应位置
 
     print('outputing asc file')
-    fi = open(r"G:\Github\pic2asc\output\file.asc",'w')
+    fi = open(r"F:\0Github同步\pic2asc\output\file.asc",'w')
     fi.write("ncols" + " " + str(grid_size[0]) + "\n")
     fi.write("nrows" + " " + str(grid_size[0]) + "\n")
     fi.write("xllcorner" + " " + "0.0" + "\n")
