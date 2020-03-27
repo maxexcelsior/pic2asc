@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 使用 Python 创建照片马赛克
-执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/site3.jpg --grid-size 200 200 --cell-size 300 --output-file output/site_r.asc
+执行方法：cmd进入到py文件所在文件夹，然后执行命令python pic2asc.py --target-image assests/contestPath.jpg --grid-size 200 138 --cell-size 15 --output-file output/curve.asc
 
 输入一张目标照片和多张替换照片，将目标照片按网格划分为许多小方块，然后将每个小方块替换为颜色值最
 接近的那张替换照片，就形成了马赛克效果。
@@ -16,8 +16,8 @@ from PIL import Image
 
 cd = {
     0 : (255, 255, 255), #road
-    1 : (62, 130, 195), #university
-    2 : (246, 202, 66), #community
+    1 : (128, 128, 128), #plot
+    # 2 : (246, 202, 66), #community
     3 : (105, 197, 91), #green
     4 : (250, 0, 0), #main road
     5 : (186, 12, 255), #axis
@@ -36,41 +36,41 @@ def splitImage(image, size):
 
     W, H = image.size[0], image.size[1]  #获取目标图形宽和高的像素数量
     m, n = size  #
-    w, h = int(W / n), int(H / m)
+    w, h = int(W / m), int(H / n)
     imgs = []
     # 先按行再按列裁剪出 m * n 个小图像
-    for j in range(m):
-        for i in range(n):
+    for j in range(n):
+        for i in range(m):
             # 坐标原点在图像左上角
             imgs.append(image.crop((i * w, j * h, (i + 1) * w, (j + 1) * h)))
     return imgs
 
 
-def getImages(imageDir):
-    """
-    从给定目录里加载所有替换图像
+# def getImages(imageDir):
+#     """
+#     从给定目录里加载所有替换图像
 
-    @param {str} imageDir 目录路径
-    @return {List[Image]} 替换图像列表
-    """
+#     @param {str} imageDir 目录路径
+#     @return {List[Image]} 替换图像列表
+#     """
 
-    files = os.listdir(imageDir)
-    images = []
-    for file in files:
-        # 得到文件绝对路径
-        filePath = os.path.abspath(os.path.join(imageDir, file))
-        try:
-            fp = open(filePath, "rb")
-            im = Image.open(fp)
-            images.append(im)
-            # 确定了图像信息，但没有加载全部图像数据，用到时才会
-            im.load()
-            # 用完关闭文件，防止资源泄露
-            fp.close()
-        except:
-            # 加载某个图像识别，直接跳过
-            print("Invalid image: %s" % (filePath,))
-    return images
+#     files = os.listdir(imageDir)
+#     images = []
+#     for file in files:
+#         # 得到文件绝对路径
+#         filePath = os.path.abspath(os.path.join(imageDir, file))
+#         try:
+#             fp = open(filePath, "rb")
+#             im = Image.open(fp)
+#             images.append(im)
+#             # 确定了图像信息，但没有加载全部图像数据，用到时才会
+#             im.load()
+#             # 用完关闭文件，防止资源泄露
+#             fp.close()
+#         except:
+#             # 加载某个图像识别，直接跳过
+#             print("Invalid image: %s" % (filePath,))
+#     return images
 
 
 def getAverageRGB(image):
@@ -144,40 +144,40 @@ def getBestMatchIndex(input_avg):    #input_avg是目标图形的，avgs是替�
     return min_key
 
 
-def createImageGrid(images, dims):
-    """
-    将图像列表里的小图像按先行后列的顺序拼接为一个大图像
+# def createImageGrid(images, dims):
+#     """
+#     将图像列表里的小图像按先行后列的顺序拼接为一个大图像
 
-    @param {List[Image]} images 小图像列表
-    @param {Tuple[int, int]} dims 大图像的行数和列数
-    @return Image 拼接得到的大图像
-    """
+#     @param {List[Image]} images 小图像列表
+#     @param {Tuple[int, int]} dims 大图像的行数和列数
+#     @return Image 拼接得到的大图像
+#     """
 
-    m, n = dims
+#     m, n = dims
 
-    # 确保小图像个数满足要求
-    assert m * n == len(images)
+#     # 确保小图像个数满足要求
+#     assert m * n == len(images)
 
-    # 计算所有小图像的最大宽度和高度
-    width = max([img.size[0] for img in images])
-    height = max([img.size[1] for img in images])
+#     # 计算所有小图像的最大宽度和高度
+#     width = max([img.size[0] for img in images])
+#     height = max([img.size[1] for img in images])
 
-    # 创建大图像对象
-    grid_img = Image.new('RGB', (n * width, m * height))
+#     # 创建大图像对象
+#     grid_img = Image.new('RGB', (n * width, m * height))
 
-    # 依次将每个小图像粘贴到大图像里
-    for index in range(len(images)):
-        # 计算要粘贴到网格的哪行
-        row = int(index / n)
-        # 计算要粘贴到网格的哪列
-        col = index - n * row
-        # 根据行列数以及网格的大小得到网格的左上角坐标，把小图像粘贴到这里
-        grid_img.paste(images[index], (col * width, row * height))
+#     # 依次将每个小图像粘贴到大图像里
+#     for index in range(len(images)):
+#         # 计算要粘贴到网格的哪行
+#         row = int(index / n)
+#         # 计算要粘贴到网格的哪列
+#         col = index - n * row
+#         # 根据行列数以及网格的大小得到网格的左上角坐标，把小图像粘贴到这里
+#         grid_img.paste(images[index], (col * width, row * height))
 
-    return grid_img
+#     return grid_img
 
 
-def createPhotomosaic(target_image, grid_size, cellsize):
+def createAscii(target_image, grid_size, cellsize, output_file):
     """
     图片马赛克生成
 
@@ -217,20 +217,20 @@ def createPhotomosaic(target_image, grid_size, cellsize):
 
 
     lt = [] #构建一个空列表用于装载要输出的数据
-    for row in range(grid_size[0]): #遍历每行
+    for row in range(grid_size[1]): #遍历每行
         lt.append([]) #在每行中再构建一个新列表用于装载每行的数据
-        for col in range(grid_size[1]): #遍历每列
+        for col in range(grid_size[0]): #遍历每列
             lt[row].append(str(color_sequence[row*grid_size[0] + col]) + " ") #将la列表中的数据添加到lt列表的对应位置
 
     print('outputing asc file')
-    fi = open(r"F:\0Github同步\pic2asc\output\file.asc",'w')
+    fi = open(output_file,'w')
     fi.write("ncols" + " " + str(grid_size[0]) + "\n")
-    fi.write("nrows" + " " + str(grid_size[0]) + "\n")
+    fi.write("nrows" + " " + str(grid_size[1]) + "\n")
     fi.write("xllcorner" + " " + "0.0" + "\n")
     fi.write("yllcorner" + " " + "0.0" + "\n")
     fi.write("cellsize" + " " + str(cellsize) + "\n")
     fi.write("NODATA_value" + " " + "-9999" + "\n")
-    for row in range(grid_size[0]): #遍历每行打印数据
+    for row in range(grid_size[1]): #遍历每行打印数据
         fi.writelines(lt[row])
         fi.write("\n")        
     fi.close()
@@ -255,13 +255,13 @@ def main():
     # 网格大小
     grid_size = (int(args.grid_size[0]), int(args.grid_size[1]))
 
-    #单元大学
+    #单元大小
     cellsize = int(args.cellsize)
 
     # 马赛克图像保存路径，默认为 mosaic.png
-    output_filename = 'mosaic.png'
+    output_file = 'output/file.asc'
     if args.outfile:
-        output_filename = args.outfile
+        output_file = args.outfile
 
     # 打开目标图像
     print('reading targe image...')
@@ -270,10 +270,10 @@ def main():
 
     # 生成马赛克图像
     print('starting photomosaic creation...')
-    mosaic_image = createPhotomosaic(target_image, grid_size, cellsize)
+    ascii_file = createAscii(target_image, grid_size, cellsize, output_file)
 
     # 保存马赛克图像
-    print(mosaic_image)
+    print(ascii_file)
 
     print('done.')
 
